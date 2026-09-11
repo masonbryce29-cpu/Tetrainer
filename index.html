@@ -27,6 +27,48 @@
       letter-spacing: 6px;
       text-transform: uppercase;
     }
+
+    .tetrainer-title {
+      display: inline-flex;
+    }
+    .title-letter {
+      display: inline-block;
+      margin: 0 3px;
+      cursor: pointer;
+      pointer-events: auto;
+      transform-origin: center bottom;
+      animation: letterGlowIdle 3.4s ease-in-out infinite;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s ease;
+    }
+    .title-letter:nth-child(1) { animation-delay: 0s; }
+    .title-letter:nth-child(2) { animation-delay: 0.2s; }
+    .title-letter:nth-child(3) { animation-delay: 0.4s; }
+    .title-letter:nth-child(4) { animation-delay: 0.6s; }
+    .title-letter:nth-child(5) { animation-delay: 0.8s; }
+    .title-letter:nth-child(6) { animation-delay: 1.0s; }
+    .title-letter:nth-child(7) { animation-delay: 1.2s; }
+    .title-letter:nth-child(8) { animation-delay: 1.4s; }
+    .title-letter:nth-child(9) { animation-delay: 1.6s; }
+    @keyframes letterGlowIdle {
+      0%, 100% { text-shadow: 0 0 20px rgba(0,255,204,0.5); color: #00ffcc; }
+      50% { text-shadow: 0 0 32px rgba(0,255,204,0.9), 0 0 14px rgba(255,255,255,0.5); color: #7dffe8; }
+    }
+    .title-letter:hover {
+      animation-play-state: paused;
+      color: #ffffff;
+      text-shadow: 0 0 22px #00ffcc, 0 0 40px #00ffcc;
+      transform: translateY(-6px) scale(1.12);
+    }
+    @keyframes letterPop {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      25% { transform: translateY(-18px) rotate(-16deg) scale(1.22); }
+      55% { transform: translateY(4px) rotate(12deg) scale(0.9); }
+      80% { transform: translateY(-4px) rotate(-5deg) scale(1.05); }
+      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    }
+    .title-letter.spin {
+      animation: letterPop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
     
     .game-area {
       display: flex;
@@ -344,10 +386,62 @@
       overflow: visible;
     }
     .triforce-fill {
-      fill: rgba(10, 14, 26, 0.92);
+      fill: url(#gradMusic);
+      transition: filter 0.35s ease;
+    }
+    .triforce-fill.fill-music {
+      fill: url(#gradMusic);
+    }
+    .triforce-fill.fill-settings {
+      fill: url(#gradSettings);
     }
     .triforce-fill.fill-play {
-      fill: rgba(16, 12, 28, 0.94);
+      fill: url(#gradPlay);
+    }
+    .triforce-grid {
+      fill: url(#techGrid);
+      opacity: 0.25;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+    }
+    .triforce-node {
+      fill: rgba(180, 225, 255, 0.85);
+      filter: url(#triforce-glow);
+      animation: nodePulse 3.2s ease-in-out infinite;
+    }
+    .triforce-node:nth-of-type(2) { animation-delay: 0.4s; }
+    .triforce-node:nth-of-type(3) { animation-delay: 0.8s; }
+    .triforce-node:nth-of-type(4) { animation-delay: 1.2s; }
+    .triforce-node:nth-of-type(5) { animation-delay: 1.6s; }
+    .triforce-node:nth-of-type(6) { animation-delay: 2.0s; }
+    @keyframes nodePulse {
+      0%, 100% { opacity: 0.5; r: 4; }
+      50% { opacity: 1; r: 6.5; }
+    }
+    .triforce-flash {
+      fill: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .triforce-flash.flash-hit {
+      animation: triforceFlashPulse 0.4s ease-out;
+    }
+    @keyframes triforceFlashPulse {
+      0% { opacity: 0.85; }
+      100% { opacity: 0; }
+    }
+    @keyframes trianglePunch {
+      0% { transform: scale(1); }
+      30% { transform: scale(0.96); }
+      60% { transform: scale(1.035); }
+      100% { transform: scale(1); }
+    }
+    .wedge {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .wedge.punch {
+      animation: trianglePunch 0.35s ease-out;
     }
     .triforce-outline {
       fill: none;
@@ -387,10 +481,25 @@
       stroke-width: 5;
     }
 
+    .title-panel.title-music:hover ~ .triforce-svg .fill-music,
+    .title-panel.title-music:focus-visible ~ .triforce-svg .fill-music,
+    .title-panel.title-music.active ~ .triforce-svg .fill-music,
+    .title-panel.title-settings:hover ~ .triforce-svg .fill-settings,
+    .title-panel.title-settings:focus-visible ~ .triforce-svg .fill-settings,
+    .title-panel.title-settings.active ~ .triforce-svg .fill-settings {
+      filter: brightness(1.4) saturate(1.35) drop-shadow(0 0 20px rgba(120, 210, 255, 0.65));
+    }
+    .title-panel.title-play:hover ~ .triforce-svg .fill-play,
+    .title-panel.title-play:focus-visible ~ .triforce-svg .fill-play,
+    .title-panel.title-play.active ~ .triforce-svg .fill-play {
+      filter: brightness(1.4) saturate(1.35) drop-shadow(0 0 20px rgba(200, 160, 255, 0.65));
+    }
+
     @keyframes titlePanelPop {
       0% { transform: scale(1); }
-      35% { transform: scale(0.93); }
-      70% { transform: scale(1.06); }
+      25% { transform: scale(0.86); }
+      50% { transform: scale(1.14); }
+      75% { transform: scale(0.96); }
       100% { transform: scale(1); }
     }
     .title-panel.spin {
@@ -405,21 +514,46 @@
       stroke: rgba(235, 210, 255, 1);
       stroke-width: 7;
     }
+    .title-panel.title-music.spin ~ .triforce-svg .fill-music,
+    .title-panel.title-settings.spin ~ .triforce-svg .fill-settings {
+      filter: brightness(1.7) saturate(1.5) drop-shadow(0 0 32px rgba(150, 220, 255, 0.85));
+    }
+    .title-panel.title-play.spin ~ .triforce-svg .fill-play {
+      filter: brightness(1.7) saturate(1.5) drop-shadow(0 0 32px rgba(215, 175, 255, 0.85));
+    }
 
     .title-burst-particle {
       position: fixed;
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       pointer-events: none;
       z-index: 9998;
       transform: translate(-50%, -50%);
       animation: titleBurstFly 0.6s ease-out forwards;
-      box-shadow: 0 0 8px currentColor;
+      box-shadow: 0 0 10px currentColor;
     }
     @keyframes titleBurstFly {
       0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
       100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+    }
+
+    .title-click-ring {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 3px solid currentColor;
+      transform: translate(-50%, -50%) scale(0.3);
+      pointer-events: none;
+      z-index: 9997;
+      opacity: 0.9;
+      animation: titleRingExpand 0.55s ease-out forwards;
+      box-shadow: 0 0 18px currentColor;
+    }
+    @keyframes titleRingExpand {
+      0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.9; }
+      100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
     }
 
     .title-panel {
@@ -434,6 +568,22 @@
       outline: none;
       appearance: none;
       -webkit-appearance: none;
+    }
+    .title-panel::after {
+      content: '';
+      position: absolute;
+      inset: -20%;
+      background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.16) 50%, transparent 58%);
+      background-size: 260% 260%;
+      animation: titleShimmer 6.5s ease-in-out infinite;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    .title-panel.title-play::after { animation-delay: 1.2s; }
+    .title-panel.title-settings::after { animation-delay: 2.4s; }
+    @keyframes titleShimmer {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
     }
 
     .title-panel.title-music {
@@ -590,6 +740,17 @@
     }
     #main-menu.menu-settings #settings-stage {
       right: 0;
+    }
+    #synth-visualizer {
+      position: fixed;
+      right: 5vw;
+      bottom: 9vh;
+      width: 46vw;
+      max-width: 640px;
+      height: 200px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 150;
     }
     #main-menu.menu-music #music-library {
       height: calc(100vh - 110px);
@@ -854,6 +1015,22 @@
     .stat-row.time span { color: #ff3366; }
     .stat-row.apm span { color: #ff3366; }
     .stat-row.pps span { color: #00ffcc; }
+    .stat-row.best span { color: #ffd700; }
+
+    .new-best-badge {
+      display: none;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ffd700;
+      text-shadow: 0 0 12px #ffd700, 0 0 26px rgba(255, 215, 0, 0.7);
+      margin-bottom: 14px;
+      animation: newBestPulse 0.9s ease-in-out infinite;
+    }
+    @keyframes newBestPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
 
     #transition-wipe {
       position: fixed;
@@ -1209,7 +1386,9 @@
 
   <div id="main-menu" class="menu-entering">
     <div class="menu-shell">
-      <h1 class="main-title">TETRAINER</h1>
+      <h1 class="main-title tetrainer-title" id="tetrainer-title" aria-label="TETRAINER">
+        <span class="title-letter">T</span><span class="title-letter">E</span><span class="title-letter">T</span><span class="title-letter">R</span><span class="title-letter">A</span><span class="title-letter">I</span><span class="title-letter">N</span><span class="title-letter">E</span><span class="title-letter">R</span>
+      </h1>
 
       <div class="title-triangle" aria-label="Main menu">
         <button type="button" class="title-panel title-music" data-stage="music" aria-label="Music" style="pointer-events:auto; z-index: 200;">
@@ -1230,16 +1409,55 @@
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
+            <linearGradient id="gradMusic" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1d3c56" stop-opacity="0.95"/>
+              <stop offset="55%" stop-color="#0c1828" stop-opacity="0.92"/>
+              <stop offset="100%" stop-color="#04080f" stop-opacity="0.9"/>
+            </linearGradient>
+            <linearGradient id="gradSettings" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#123448" stop-opacity="0.95"/>
+              <stop offset="55%" stop-color="#0a1c24" stop-opacity="0.92"/>
+              <stop offset="100%" stop-color="#04090d" stop-opacity="0.9"/>
+            </linearGradient>
+            <linearGradient id="gradPlay" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#2c1c48" stop-opacity="0.96"/>
+              <stop offset="60%" stop-color="#160d28" stop-opacity="0.94"/>
+              <stop offset="100%" stop-color="#0a0616" stop-opacity="0.92"/>
+            </linearGradient>
+            <pattern id="techGrid" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="26" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+            </pattern>
           </defs>
-          <polygon class="triforce-fill fill-music" points="0,0 450,0 180,128"></polygon>
-          <polygon class="triforce-fill fill-settings" points="450,0 900,0 720,128"></polygon>
-          <polygon class="triforce-fill fill-play" points="180,128 720,128 450,320"></polygon>
-          <polygon class="triforce-outline outline-music" points="0,0 450,0 180,128"></polygon>
-          <polygon class="triforce-outline outline-settings" points="450,0 900,0 720,128"></polygon>
-          <polygon class="triforce-outline outline-play" points="180,128 720,128 450,320"></polygon>
-          <polygon class="triforce-inner inner-music"></polygon>
-          <polygon class="triforce-inner inner-settings"></polygon>
-          <polygon class="triforce-inner inner-play"></polygon>
+          <g class="wedge wedge-music">
+            <polygon class="triforce-fill fill-music" points="0,0 450,0 180,128"></polygon>
+            <polygon class="triforce-grid" points="0,0 450,0 180,128"></polygon>
+            <polygon class="triforce-outline outline-music" points="0,0 450,0 180,128"></polygon>
+            <polygon class="triforce-inner inner-music"></polygon>
+            <circle class="triforce-node" cx="0" cy="0" r="4"></circle>
+            <circle class="triforce-node" cx="450" cy="0" r="4"></circle>
+            <circle class="triforce-node" cx="180" cy="128" r="4"></circle>
+            <polygon class="triforce-flash flash-music" points="0,0 450,0 180,128"></polygon>
+          </g>
+          <g class="wedge wedge-settings">
+            <polygon class="triforce-fill fill-settings" points="450,0 900,0 720,128"></polygon>
+            <polygon class="triforce-grid" points="450,0 900,0 720,128"></polygon>
+            <polygon class="triforce-outline outline-settings" points="450,0 900,0 720,128"></polygon>
+            <polygon class="triforce-inner inner-settings"></polygon>
+            <circle class="triforce-node" cx="450" cy="0" r="4"></circle>
+            <circle class="triforce-node" cx="900" cy="0" r="4"></circle>
+            <circle class="triforce-node" cx="720" cy="128" r="4"></circle>
+            <polygon class="triforce-flash flash-settings" points="450,0 900,0 720,128"></polygon>
+          </g>
+          <g class="wedge wedge-play">
+            <polygon class="triforce-fill fill-play" points="180,128 720,128 450,320"></polygon>
+            <polygon class="triforce-grid" points="180,128 720,128 450,320"></polygon>
+            <polygon class="triforce-outline outline-play" points="180,128 720,128 450,320"></polygon>
+            <polygon class="triforce-inner inner-play"></polygon>
+            <circle class="triforce-node" cx="180" cy="128" r="4"></circle>
+            <circle class="triforce-node" cx="720" cy="128" r="4"></circle>
+            <circle class="triforce-node" cx="450" cy="320" r="4"></circle>
+            <polygon class="triforce-flash flash-play" points="180,128 720,128 450,320"></polygon>
+          </g>
         </svg>
       </div>
 
@@ -1251,11 +1469,11 @@
         <div class="settings-grid">
           <div class="control-group" id="ctrl-startLvl">
             STARTING LEVEL 
-            <input type="number" id="startLvl" value="1" min="1" max="30" onchange="this.blur()" onfocus="setMenuIndex(0)">
+            <input type="number" id="startLvl" value="1" min="1" max="30" onchange="this.blur(); saveSettings();" onfocus="setMenuIndex(0)">
           </div>
           
           <div class="control-group" id="ctrl-theme">THEME
-            <select id="themeSelect" onchange="this.blur(); updateThemePreview(this.value);" onfocus="setMenuIndex(1)">
+            <select id="themeSelect" onchange="this.blur(); updateThemePreview(this.value); saveSettings();" onfocus="setMenuIndex(1)">
               <option value="classic">CLASSIC</option>
               <option value="cyberpunk">CYBERPUNK</option>
               <option value="neon">NEON</option>
@@ -1299,6 +1517,7 @@
         <div id="music-library" class="music-grid"></div>
       </div>
     </div>
+    <canvas id="synth-visualizer"></canvas>
   </div>
 
   <div id="keybinds-menu" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 16, 0.95); backdrop-filter: blur(8px); z-index: 250; flex-direction: column; align-items: center; justify-content: center;">
@@ -1322,6 +1541,7 @@
 
   <div id="game-overlay">
     <h1 id="overlay-title" class="main-title">GAME OVER</h1>
+    <div id="go-new-best" class="new-best-badge">&#9733; NEW BEST! &#9733;</div>
     <div id="overlay-stats">
       <div class="stat-row score" id="go-score-row">FINAL SCORE: <span id="go-score">0</span></div>
       <div class="stat-row lines">LINES CLEARED: <span id="go-lines">0</span></div>
@@ -1329,6 +1549,7 @@
       <div class="stat-row apm" id="go-apm-row">APM: <span id="go-apm">0.00</span></div>
       <div class="stat-row pps">PPS: <span id="go-pps">0.0000</span></div>
       <div class="stat-row time">TIME ELAPSED: <span id="go-time">00:00</span></div>
+      <div class="stat-row best" id="go-best-row" style="display:none;">PERSONAL BEST: <span id="go-best-label">-</span></div>
     </div>
     <button class="menu-btn overlay-nav-btn" id="resumeBtn" onclick="togglePause()">RESUME</button>
     <button class="menu-btn overlay-nav-btn" onclick="restartGame()">RESTART</button>
@@ -1404,7 +1625,7 @@
         <div class="panel-title">HOLD</div>
         <canvas id="p2-hold" class="hold-canvas" width="80" height="80"></canvas>
         
-        <div class="badges-container" style="margin-top: 10px; margin-bottom: 0;">
+        <div class="badges-container" style="margin-top: -6px; margin-bottom: 0;">
           <div class="b2b-badge" id="p2-b2b-badge">
             <div class="b2b-star star-white" id="p2-b2b-star"></div>
             <div class="b2b-text text-black" id="p2-b2b-text">0</div>
@@ -1875,6 +2096,8 @@
     let userMaxVolume = 0.333;
     let isAudioRouted = false;
     let bgmFilterNode = null;
+    let analyserNode = null;
+    let analyserData = null;
     let isLocalFile = window.location.protocol === 'file:';
     const audioCtx = (window.AudioContext || window.webkitAudioContext)
         ? new (window.AudioContext || window.webkitAudioContext)()
@@ -1892,7 +2115,14 @@
         bgmFilterNode = audioCtx.createBiquadFilter();
         bgmFilterNode.type = 'lowpass';
         bgmFilterNode.frequency.value = 20000;
-        bgmFilterNode.connect(audioCtx.destination);
+
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 256;
+        analyserNode.smoothingTimeConstant = 0.8;
+        analyserData = new Uint8Array(analyserNode.frequencyBinCount);
+
+        bgmFilterNode.connect(analyserNode);
+        analyserNode.connect(audioCtx.destination);
         
         try {
             let source = audioCtx.createMediaElementSource(mainBgm);
@@ -1911,6 +2141,7 @@
             volLevel = (volLevel + 1) % 4;
         }
         updateVolumeUI();
+        saveSettings();
     }
 
     function updateVolumeUI() {
@@ -1981,11 +2212,84 @@
     };
     let bindingAction = null;
 
+    const SETTINGS_KEY = 'tetrainerSettings';
+    const BESTS_KEY = 'tetrainerBests';
+    let personalBests = {};
+
+    function saveSettings() {
+        try {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+                customBinds,
+                theme: document.getElementById('themeSelect').value,
+                startLevel: parseInt(document.getElementById('startLvl').value) || 1,
+                bgEnabled,
+                showBgControls,
+                volLevel
+            }));
+        } catch (e) { /* localStorage unavailable (private browsing, etc.) */ }
+    }
+
+    function loadSettings() {
+        let data;
+        try { data = JSON.parse(localStorage.getItem(SETTINGS_KEY)); } catch (e) { data = null; }
+        if (!data) return;
+
+        if (data.customBinds) Object.assign(customBinds, data.customBinds);
+
+        const themeSelect = document.getElementById('themeSelect');
+        if (data.theme && themeSelect && [...themeSelect.options].some(o => o.value === data.theme)) {
+            themeSelect.value = data.theme;
+        }
+
+        const startLvlInput = document.getElementById('startLvl');
+        if (data.startLevel && startLvlInput) startLvlInput.value = data.startLevel;
+
+        if (typeof data.bgEnabled === 'boolean') {
+            bgEnabled = data.bgEnabled;
+            let btn = document.getElementById('bgToggleBtn');
+            if (btn) { btn.innerText = bgEnabled ? "ON" : "OFF"; btn.style.color = bgEnabled ? "#00ffcc" : "#ff3366"; }
+        }
+        if (typeof data.showBgControls === 'boolean') {
+            showBgControls = data.showBgControls;
+            let btn = document.getElementById('bgCtrlToggleBtn');
+            if (btn) { btn.innerText = showBgControls ? "ON" : "OFF"; btn.style.color = showBgControls ? "#00ffcc" : "#ff3366"; }
+        }
+        if (typeof data.volLevel === 'number') volLevel = data.volLevel;
+    }
+
+    function loadBests() {
+        try { personalBests = JSON.parse(localStorage.getItem(BESTS_KEY)) || {}; }
+        catch (e) { personalBests = {}; }
+    }
+
+    function saveBests() {
+        try { localStorage.setItem(BESTS_KEY, JSON.stringify(personalBests)); } catch (e) {}
+    }
+
+    const BEST_LABELS = {
+        endless: 'BEST SCORE',
+        sprint: 'BEST TIME',
+        survival: 'BEST SURVIVAL',
+        puzzles: 'BEST TIME',
+        endurance: 'BEST WAVE'
+    };
+
+    // Higher "value" always wins; times are stored negated so a faster run compares as "higher".
+    function getRunResult(mode, p1) {
+        if (mode === 'endless') return { value: p1.score, text: `${p1.score}` };
+        if (mode === 'sprint') return p1.lines >= 40 ? { value: -p1.playTimeMs, text: formatTime(p1.playTimeMs) } : null;
+        if (mode === 'survival') return { value: p1.playTimeMs, text: formatTime(p1.playTimeMs) };
+        if (mode === 'puzzles') return p1.puzzleIndex >= p1.puzzleOrder.length ? { value: -p1.playTimeMs, text: formatTime(p1.playTimeMs) } : null;
+        if (mode === 'endurance') return { value: enduranceWave, text: `WAVE ${enduranceWave}` };
+        return null;
+    }
+
     function toggleBgSetting() {
         bgEnabled = !bgEnabled;
         let btn = document.getElementById('bgToggleBtn');
         btn.innerText = bgEnabled ? "ON" : "OFF";
         btn.style.color = bgEnabled ? "#00ffcc" : "#ff3366";
+        saveSettings();
     }
 
     function toggleBgControlsSetting() {
@@ -1993,6 +2297,7 @@
         let btn = document.getElementById('bgCtrlToggleBtn');
         btn.innerText = showBgControls ? "ON" : "OFF";
         btn.style.color = showBgControls ? "#00ffcc" : "#ff3366";
+        saveSettings();
     }
 
     const menuItems = [
@@ -2035,12 +2340,12 @@
 
     const modeDeck = [
         { mode: 'endless', label: 'Endless', tag: 'Arcade', color: '#aa00ff' },
-        { mode: 'sprint', label: 'Ultra', tag: 'Speed', color: '#0088ff' },
+        { mode: 'sprint', label: 'Ultra', tag: 'Speed', color: '#ff9900' },
         { mode: 'survival', label: 'Survival', tag: 'Endure', color: '#00ffcc' },
         { mode: 'puzzles', label: 'Puzzles', tag: 'Logic', color: '#e040fb' },
         { mode: 'vs', label: 'VS Bot', tag: 'Battle', color: '#ff3366' },
-        { mode: 'botvsbot', label: 'Spectate', tag: 'Watch', color: '#ff9900' },
-        { mode: 'endurance', label: 'Endurance', tag: 'Wave', color: '#ff9900' }
+        { mode: 'botvsbot', label: 'Spectate', tag: 'Watch', color: '#ff3366' },
+        { mode: 'endurance', label: 'Endurance', tag: 'Wave', color: '#ff3366' }
     ];
     let selectedModeIndex = 0;
     let menuStage = 'play';
@@ -2058,23 +2363,40 @@
       battle: '#ff3366'
     };
 
+    // Maps a PLAYLISTS key to every game-mode label that actually plays it (see setModePlaylist).
+    const PLAYLIST_LABELS = {
+      menu: ['MENU'],
+      survival: ['SURVIVAL'],
+      endless: ['ENDLESS'],
+      sprint: ['ULTRA'],
+      puzzles: ['PUZZLES'],
+      battle: ['VS', 'SPECTATE', 'ENDURANCE'],
+      default: []
+    };
+
     function renderMusicLibrary() {
         const container = document.getElementById('music-library');
         if (!container) return;
 
-        const tracks = [];
+        const bySrc = new Map();
         Object.entries(PLAYLISTS).forEach(([mode, playlist]) => {
             playlist.forEach(track => {
-                tracks.push({ mode, title: track.title, src: track.src });
+                if (!bySrc.has(track.src)) {
+                    bySrc.set(track.src, { title: track.title, src: track.src, modes: [mode] });
+                } else if (!bySrc.get(track.src).modes.includes(mode)) {
+                    bySrc.get(track.src).modes.push(mode);
+                }
             });
         });
+        const tracks = Array.from(bySrc.values());
 
         musicLibraryTracks = tracks;
         selectedMusicIndex = 0;
         playingMusicIndex = -1;
         container.innerHTML = tracks.map((track, index) => {
-          const label = track.mode === 'battle' ? 'VS' : track.mode === 'sprint' ? 'ULTRA' : track.mode;
-          const color = musicModeColors[track.mode] || '#66d9ff';
+          const labels = [...new Set(track.modes.flatMap(mode => PLAYLIST_LABELS[mode] || [mode.toUpperCase()]))];
+          const label = labels.join(' / ');
+          const color = musicModeColors[track.modes[0]] || '#66d9ff';
           return `
             <div class="music-item" data-index="${index}" title="${track.title}" style="--track-color: ${color}">
               <span class="mode-chip">${label}</span>
@@ -2095,6 +2417,88 @@
         });
         updateMusicCarousel();
       }
+
+      // --- SYNTHWAVE MUSIC VISUALIZER ---
+      const synthCanvas = document.getElementById('synth-visualizer');
+      const synthCtx = synthCanvas ? synthCanvas.getContext('2d') : null;
+      let synthBarLevels = [];
+      let synthLastBeatId = -1;
+
+      function resizeSynthCanvas() {
+          if (!synthCanvas) return;
+          const rect = synthCanvas.getBoundingClientRect();
+          synthCanvas.width = Math.max(1, Math.floor(rect.width));
+          synthCanvas.height = Math.max(1, Math.floor(rect.height));
+      }
+      window.addEventListener('resize', resizeSynthCanvas);
+
+      let synthVisAlpha = 0;
+
+      function loopSynthVisualizer() {
+          requestAnimationFrame(loopSynthVisualizer);
+          if (!synthCtx) return;
+
+          // Strictly music-tab-only: ease out and go fully display:none the moment we leave it or a match starts.
+          const isMusicTabActive = menuStage === 'music' && bgMode === 'menu';
+          synthVisAlpha += ((isMusicTabActive ? 1 : 0) - synthVisAlpha) * 0.12;
+          if (synthVisAlpha < 0.01) synthVisAlpha = 0;
+
+          if (synthVisAlpha <= 0) {
+              synthCanvas.style.display = 'none';
+              return;
+          }
+          synthCanvas.style.display = 'block';
+          synthCanvas.style.opacity = synthVisAlpha;
+
+          if (synthCanvas.width !== synthCanvas.clientWidth || synthCanvas.height !== synthCanvas.clientHeight) resizeSynthCanvas();
+          const w = synthCanvas.width, h = synthCanvas.height;
+          if (!w || !h) return;
+
+          const barCount = 40;
+          if (synthBarLevels.length !== barCount) synthBarLevels = new Array(barCount).fill(0);
+
+          // Bars only jump on an actual detected beat, then decay - so motion tracks the beat, not the raw spectrum.
+          if (beatEventId !== synthLastBeatId) {
+              synthLastBeatId = beatEventId;
+              if (analyserNode && analyserData) {
+                  analyserNode.getByteFrequencyData(analyserData);
+                  const step = Math.max(1, Math.floor(analyserData.length / barCount));
+                  for (let i = 0; i < barCount; i++) {
+                      synthBarLevels[i] = Math.max(synthBarLevels[i], (analyserData[i * step] || 0) / 255);
+                  }
+              } else {
+                  for (let i = 0; i < barCount; i++) {
+                      synthBarLevels[i] = Math.max(synthBarLevels[i], 0.3 + Math.random() * 0.45);
+                  }
+              }
+          }
+          for (let i = 0; i < barCount; i++) synthBarLevels[i] *= 0.90;
+
+          synthCtx.clearRect(0, 0, w, h);
+
+          // Soft ambient glow behind the bars so the whole thing reads as floating, not a hard bar chart.
+          const glowGrad = synthCtx.createRadialGradient(w / 2, h * 0.85, 0, w / 2, h * 0.85, Math.max(w, h) * 0.7);
+          glowGrad.addColorStop(0, 'rgba(20, 255, 140, 0.16)');
+          glowGrad.addColorStop(1, 'rgba(20, 255, 140, 0)');
+          synthCtx.fillStyle = glowGrad;
+          synthCtx.fillRect(0, 0, w, h);
+
+          const barGap = 3;
+          const barWidth = (w - barGap * (barCount - 1)) / barCount;
+          const midY = h / 2;
+
+          for (let i = 0; i < barCount; i++) {
+              const x = i * (barWidth + barGap);
+              const barH = Math.max(3, synthBarLevels[i] * h * 0.4);
+              const grad = synthCtx.createLinearGradient(0, midY - barH, 0, midY + barH);
+              grad.addColorStop(0, 'rgba(10, 255, 140, 0.05)');
+              grad.addColorStop(0.5, 'rgba(60, 255, 170, 0.85)');
+              grad.addColorStop(1, 'rgba(10, 255, 140, 0.05)');
+              synthCtx.fillStyle = grad;
+              synthCtx.fillRect(x, midY - barH, barWidth, barH * 2);
+          }
+      }
+      requestAnimationFrame(loopSynthVisualizer);
 
       function updateMusicCarousel() {
         const container = document.getElementById('music-library');
@@ -2215,8 +2619,10 @@
       }
       activateMenuTitlePanels('');
 
-      const STAGE_CLOSE_MS = 220;
-      const PRISM_CENTER_MS = 380;
+      // The prism only visually travels when music/settings are involved, so plain/play swaps can open right away.
+      const repositioning = previousStage === 'music' || previousStage === 'settings' || nextStage === 'music' || nextStage === 'settings';
+      const STAGE_CLOSE_MS = 140;
+      const PRISM_CENTER_MS = 240;
 
       menuStageTimers.push(window.setTimeout(() => {
         if (previousStageEl) {
@@ -2230,10 +2636,12 @@
           mainMenu.classList.add(`menu-${nextStage}`);
         }
 
-        menuStageTimers.push(window.setTimeout(() => {
-          // Step 3: bring up the destination tab.
+        if (repositioning) {
+          menuStageTimers.push(window.setTimeout(openNextStage, PRISM_CENTER_MS));
+        } else {
+          // Step 3: bring up the destination tab immediately, nothing to wait on.
           openNextStage();
-        }, PRISM_CENTER_MS));
+        }
       }, STAGE_CLOSE_MS));
     }
 
@@ -2399,23 +2807,37 @@
     }
 
     function spawnColorBurst(x, y, colors) {
-        const count = 14;
+        const count = 20;
         for (let i = 0; i < count; i++) {
             const el = document.createElement('div');
             el.className = 'title-burst-particle';
             const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
-            const dist = 40 + Math.random() * 60;
+            const dist = 50 + Math.random() * 80;
             el.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
             el.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
             el.style.left = `${x}px`;
             el.style.top = `${y}px`;
-            el.style.background = colors[Math.floor(Math.random() * colors.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            el.style.background = color;
+            el.style.color = color;
             document.body.appendChild(el);
             el.addEventListener('animationend', () => el.remove());
         }
     }
 
+    function spawnClickRing(x, y, color) {
+        const ring = document.createElement('div');
+        ring.className = 'title-click-ring';
+        ring.style.left = `${x}px`;
+        ring.style.top = `${y}px`;
+        ring.style.color = color;
+        document.body.appendChild(ring);
+        ring.addEventListener('animationend', () => ring.remove());
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        loadSettings();
+        loadBests();
         updateVolumeUI();
         setModePlaylist('menu');
         renderMusicLibrary();
@@ -2427,6 +2849,8 @@
             btn.addEventListener('click', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
+                ensureAudioRouting();
+                sfx.menuClick();
                 btn.classList.remove('spin');
                 void btn.offsetWidth;
                 btn.classList.add('spin');
@@ -2441,11 +2865,46 @@
                     const originX = rect.left + rect.width * (cx / 100);
                     const originY = rect.top + rect.height * (cy / 100);
                     spawnColorBurst(originX, originY, burstColors);
+                    spawnClickRing(originX, originY, burstColors[0]);
+
+                    const triangle = btn.closest('.title-triangle');
+                    const wedgeEl = triangle ? triangle.querySelector(`.wedge-${btn.dataset.stage}`) : null;
+                    if (wedgeEl) {
+                        wedgeEl.classList.remove('punch');
+                        void wedgeEl.getBoundingClientRect();
+                        wedgeEl.classList.add('punch');
+                        setTimeout(() => wedgeEl.classList.remove('punch'), 400);
+                    }
+                    const flashEl = triangle ? triangle.querySelector(`.flash-${btn.dataset.stage}`) : null;
+                    if (flashEl) {
+                        flashEl.classList.remove('flash-hit');
+                        void flashEl.getBoundingClientRect();
+                        flashEl.classList.add('flash-hit');
+                        setTimeout(() => flashEl.classList.remove('flash-hit'), 450);
+                    }
                 }
                 if (btn.dataset.stage) {
-                  const direction = btn.dataset.stage === 'music' ? 'left' : '';
-                  setMenuStage(btn.dataset.stage, direction);
+                  if (menuStage === btn.dataset.stage) {
+                    setMenuStage('');
+                  } else {
+                    const direction = btn.dataset.stage === 'music' ? 'left' : '';
+                    setMenuStage(btn.dataset.stage, direction);
+                  }
                 }
+            });
+        });
+
+        document.querySelectorAll('.title-letter').forEach((letter, idx) => {
+            letter.addEventListener('click', (event) => {
+                event.stopPropagation();
+                ensureAudioRouting();
+                playClick('sine', 480 + idx * 45, 880 + idx * 45, 0.12, 0.08);
+                letter.classList.remove('spin');
+                void letter.offsetWidth;
+                letter.classList.add('spin');
+                setTimeout(() => letter.classList.remove('spin'), 650);
+                const rect = letter.getBoundingClientRect();
+                spawnColorBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, ['#00ffcc', '#66fff2', '#ffffff', '#0099aa']);
             });
         });
     });
@@ -2618,6 +3077,24 @@
       document.getElementById('go-pps').innerText = pps;
       document.getElementById('go-time').innerText = formatTime(p1.playTimeMs);
 
+      const bestRow = document.getElementById('go-best-row');
+      const newBestBadge = document.getElementById('go-new-best');
+      const result = getRunResult(gameMode, p1);
+      if (result && BEST_LABELS[gameMode]) {
+          const prevBest = personalBests[gameMode];
+          const isNewBest = !prevBest || result.value > prevBest.value;
+          if (isNewBest) {
+              personalBests[gameMode] = { value: result.value, text: result.text };
+              saveBests();
+          }
+          document.getElementById('go-best-label').innerText = isNewBest ? result.text : prevBest.text;
+          bestRow.style.display = 'block';
+          newBestBadge.style.display = isNewBest ? 'block' : 'none';
+      } else {
+          bestRow.style.display = 'none';
+          newBestBadge.style.display = 'none';
+      }
+
       document.getElementById('game-overlay').style.display = 'flex';
       refreshOverlayBtns();
     }
@@ -2725,6 +3202,29 @@
                color: ['#ff3366', '#ff9900', '#ffffff', '#00ffcc'][Math.floor(Math.random()*4)], 
                type: 'star' 
            });
+        }
+
+        // Blast every placed block off the stack so it pops out and tumbles away
+        for (let r = 0; r < 20; r++) {
+            for (let c = 0; c < 10; c++) {
+                let val = p.playfield[r][c];
+                if (!val) continue;
+                p.particles.push({
+                    x: c * grid + grid / 2,
+                    y: r * grid + grid / 2,
+                    vx: (c - 4.5) * 0.8 + (Math.random() - 0.5) * 9,
+                    vy: -Math.random() * 13 - 4,
+                    life: 2.2,
+                    decay: 0.0025,
+                    gravity: 0.45,
+                    rot: 0,
+                    rotV: (Math.random() - 0.5) * 0.35,
+                    color: val === 'G' ? '#555566' : (colors[val] || '#888'),
+                    type: 'block',
+                    size: grid - 2
+                });
+                p.playfield[r][c] = 0;
+            }
         }
         
         p.shakeTime = 30; p.shakeMag = 20;
@@ -2876,6 +3376,76 @@
         scale: Math.random() * 1 + 0.5
     }));
     let enduranceLightning = 0;
+
+    // --- MUSIC-REACTIVE BEAT PULSE (colored by the held/active piece) ---
+    let beatPulse = 0;
+    let beatEnergyHistory = [];
+    let lastBeatTime = 0;
+    let beatEventId = 0; // bumped every time a beat fires, shared with the synth visualizer
+
+    function hexToRgba(hex, alpha) {
+        let h = hex.replace('#', '');
+        if (h.length === 3) h = h.split('').map(c => c + c).join('');
+        let r = parseInt(h.substring(0, 2), 16) || 0;
+        let g = parseInt(h.substring(2, 4), 16) || 0;
+        let b = parseInt(h.substring(4, 6), 16) || 0;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function updateBeatPulse(dt) {
+        beatPulse *= Math.pow(0.94, dt / 16);
+        if (isPaused) return;
+
+        if (analyserNode && analyserData) {
+            analyserNode.getByteFrequencyData(analyserData);
+            const bassBins = Math.min(8, analyserData.length);
+            let bassSum = 0;
+            for (let i = 0; i < bassBins; i++) bassSum += analyserData[i];
+            const instantEnergy = bassSum / bassBins;
+
+            beatEnergyHistory.push(instantEnergy);
+            if (beatEnergyHistory.length > 50) beatEnergyHistory.shift();
+
+            // Adaptive "mean + k*stddev" spike detector - self-normalizes to each track's own loudness/dynamics.
+            if (beatEnergyHistory.length >= 15) {
+                const avgEnergy = beatEnergyHistory.reduce((a, b) => a + b, 0) / beatEnergyHistory.length;
+                const variance = beatEnergyHistory.reduce((sum, e) => sum + (e - avgEnergy) * (e - avgEnergy), 0) / beatEnergyHistory.length;
+                const threshold = avgEnergy + Math.sqrt(variance) * 1.4;
+
+                if (instantEnergy > threshold && instantEnergy > 10 && (bgTime - lastBeatTime) > 260) {
+                    lastBeatTime = bgTime;
+                    beatPulse = 1;
+                    beatEventId++;
+                }
+            }
+        } else if (mainBgm && !mainBgm.paused) {
+            // No AnalyserNode available (e.g. local file:// testing) - simulate a steady beat instead.
+            if (bgTime - lastBeatTime > 500) {
+                lastBeatTime = bgTime;
+                beatPulse = 1;
+                beatEventId++;
+            }
+        }
+    }
+
+    // Mellow bottom-up glow drawn behind an individual player's board, colored by their held/active piece.
+    function drawBoardBeatPulse(p, ctx) {
+        if (beatPulse <= 0.015 || p.gameOver) return;
+        const pieceName = p.heldPiece || (p.tetromino && p.tetromino.name);
+        if (!pieceName) return;
+        const pieceColor = colors[pieceName] || '#ffffff';
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        const glowTop = 640 * 0.35;
+        const grad = ctx.createLinearGradient(0, 640, 0, glowTop);
+        grad.addColorStop(0, hexToRgba(pieceColor, 0.22 * beatPulse));
+        grad.addColorStop(0.55, hexToRgba(pieceColor, 0.08 * beatPulse));
+        grad.addColorStop(1, hexToRgba(pieceColor, 0));
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, glowTop, 340, 640 - glowTop);
+        ctx.restore();
+    }
 
     function loopBackground(timestamp) {
         requestAnimationFrame(loopBackground);
@@ -3714,6 +4284,8 @@
                 bgCtx.fill();
             });
         }
+
+        updateBeatPulse(dt);
     }
     requestAnimationFrame(loopBackground);
 
@@ -3778,6 +4350,7 @@
     }
 
     const sfx = {
+      menuClick: () => playClick('sine', 520, 900, 0.09, 0.07),
       gameStart: () => {
           playClick('sawtooth', 200, 600, 0.3, 0.1);
           setTimeout(() => playClick('square', 300, 900, 0.3, 0.1), 100);
@@ -5060,6 +5633,8 @@
       let ctx = p.ctx;
       ctx.clearRect(0, 0, 340, 640); ctx.save(); 
 
+      drawBoardBeatPulse(p, ctx);
+
       // Render Background Controls (if toggled on and not a bot)
       if (!p.isBot && showBgControls && p.playTimeMs < 30000) {
           ctx.save();
@@ -5278,7 +5853,7 @@
       }
 
       for (let i=p.particles.length-1; i>=0; i--) {
-        let pt = p.particles[i]; if(!isPaused) { pt.x+=pt.vx; pt.y+=pt.vy; pt.vy+=pt.gravity; pt.life-=pt.decay; if (pt.rotV) pt.rot = (pt.rot||0) + pt.rotV; }
+        let pt = p.particles[i]; if(!isPaused) { pt.x+=pt.vx; pt.y+=pt.vy; pt.vy+=pt.gravity; pt.life-=pt.decay; if (pt.rotV) pt.rot = (pt.rot||0) + pt.rotV; if (pt.type==='block' && pt.y > 760) pt.life = 0; }
         if(pt.life<=0) p.particles.splice(i,1); else { 
             ctx.globalAlpha=Math.max(0, pt.life); 
             ctx.fillStyle=pt.color; 
@@ -5299,6 +5874,16 @@
                 ctx.translate(pt.x, pt.y);
                 ctx.rotate(pt.rot || 0);
                 ctx.fillRect(-pt.size/2, -pt.size/4, pt.size, pt.size/2);
+                ctx.restore();
+            } else if (pt.type==='block') {
+                ctx.save();
+                ctx.translate(pt.x, pt.y);
+                ctx.rotate(pt.rot || 0);
+                let s = pt.size || (grid - 2);
+                ctx.fillRect(-s/2, -s/2, s, s);
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-s/2, -s/2, s, s);
                 ctx.restore();
             } else {
                 ctx.fillRect(pt.x-3, pt.y-3, 6, 6); 
@@ -5336,7 +5921,14 @@
         if (badgeEl && badgeEl.classList.contains('active') && !badgeEl.classList.contains('release')) {
           const totalGarbageLines = p.garbageQueue.reduce((sum, chunk) => sum + chunk.lines, 0);
           const garbageTopY = 640 - totalGarbageLines * grid;
-          badgeEl.style.opacity = garbageTopY <= 150 ? '0' : '';
+
+          let stackTopRow = 20;
+          for (let r = 0; r < 20; r++) {
+            if (p.playfield[r].some(cell => !!cell && cell !== 0)) { stackTopRow = r; break; }
+          }
+          const stackTopY = stackTopRow * grid;
+
+          badgeEl.style.opacity = (garbageTopY <= 150 || stackTopY <= 150) ? '0' : '';
         } else if (badgeEl) {
           badgeEl.style.opacity = '';
         }
@@ -5947,6 +6539,7 @@
           document.getElementById('keybind-prompt').style.display = 'none';
           renderKeybinds();
           sfx.hardDrop(false);
+          saveSettings();
           return;
       }
       
@@ -6405,6 +6998,7 @@
         overlayActive = true;
         document.getElementById('overlay-title').innerText = "PAUSED";
         document.getElementById('overlay-stats').style.display = 'none';
+        document.getElementById('go-new-best').style.display = 'none';
         document.getElementById('resumeBtn').style.display = 'block';
         document.getElementById('game-overlay').style.display = 'flex';
         refreshOverlayBtns();
