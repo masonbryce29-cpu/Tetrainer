@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Tetrainer</title>
   <style>
     body {
@@ -1269,6 +1270,49 @@
     .track-controls { display: flex; gap: 15px; margin-top: 6px; }
     .track-controls button { background: #333; border: 1px solid #555; border-radius: 4px; color: #00ffcc; cursor: pointer; padding: 2px 12px; font-size: 14px; font-weight: 900; transition: all 0.2s;}
     .track-controls button:hover { background: #00ffcc; color: #000; box-shadow: 0 0 10px #00ffcc; }
+
+    /* --- MOBILE TOUCH CONTROLS --- */
+    #touch-controls {
+      display: none;
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 500;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+      pointer-events: none;
+    }
+    body.touch-device.in-game #touch-controls {
+      display: flex;
+    }
+    .touch-group {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      pointer-events: auto;
+    }
+    .touch-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,255,204,0.5);
+      background: rgba(20,20,30,0.55);
+      color: #00ffcc;
+      font-size: 22px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      user-select: none;
+    }
+    .touch-btn:active {
+      background: rgba(0,255,204,0.35);
+      transform: scale(0.92);
+    }
+    .touch-btn-label { font-size: 12px; }
+    .touch-btn-drop { width: 68px; height: 68px; border-color: rgba(255,51,102,0.6); color: #ff3366; }
   </style>
 </head>
 <body>
@@ -1671,6 +1715,20 @@
         <div class="panel-title">NEXT</div>
         <canvas id="p2-next" class="next-canvas" style="background-color: transparent; border: none; box-shadow: none;" width="110" height="380"></canvas>
       </div>
+    </div>
+  </div>
+
+  <div id="touch-controls">
+    <div class="touch-group">
+      <button type="button" class="touch-btn" id="tc-left" aria-label="Move Left">&#9664;</button>
+      <button type="button" class="touch-btn" id="tc-down" aria-label="Soft Drop">&#9660;</button>
+      <button type="button" class="touch-btn" id="tc-right" aria-label="Move Right">&#9654;</button>
+    </div>
+    <div class="touch-group">
+      <button type="button" class="touch-btn touch-btn-label" id="tc-hold" aria-label="Hold">HOLD</button>
+      <button type="button" class="touch-btn" id="tc-ccw" aria-label="Rotate Counter-clockwise">&#8634;</button>
+      <button type="button" class="touch-btn" id="tc-cw" aria-label="Rotate Clockwise">&#8635;</button>
+      <button type="button" class="touch-btn touch-btn-drop touch-btn-label" id="tc-drop" aria-label="Hard Drop">DROP</button>
     </div>
   </div>
 <script>
@@ -3293,8 +3351,11 @@
         
         let gameArea = document.getElementById('game-area');
         if(gameArea) {
+            const p2Area = document.getElementById('p2-area');
+            const isTwoPlayer = p2Area && p2Area.style.display !== 'none';
+            const designWidth = isTwoPlayer ? 1120 : 560;
             const BOARD_SCALE = 1.12;
-            let scale = Math.min(BOARD_SCALE, (bgH / 780) * BOARD_SCALE); 
+            let scale = Math.min(BOARD_SCALE, (bgH / 780) * BOARD_SCALE, (bgW / designWidth) * BOARD_SCALE);
             gameArea.style.transform = `scale(${scale})`;
         }
     }
@@ -3428,19 +3489,29 @@
         }
     }
 
-    // Mellow bottom-up glow drawn behind an individual player's board, colored by their held/active piece.
+    // Mellow bottom-up glow drawn behind an individual player's board, colored by their held/active piece
+    // (or briefly by the piece they just placed, which takes priority while its own pulse is stronger).
     function drawBoardBeatPulse(p, ctx) {
-        if (beatPulse <= 0.015 || p.gameOver) return;
-        const pieceName = p.heldPiece || (p.tetromino && p.tetromino.name);
-        if (!pieceName) return;
-        const pieceColor = colors[pieceName] || '#ffffff';
+        p.lockPulse = (p.lockPulse || 0) * 0.90;
+        const lockIntensity = p.lockPulse;
+        const intensity = Math.max(beatPulse, lockIntensity);
+        if (intensity <= 0.015 || p.gameOver) return;
+
+        let pieceColor;
+        if (lockIntensity >= beatPulse) {
+            pieceColor = p.lockPulseColor || '#ffffff';
+        } else {
+            const pieceName = p.heldPiece || (p.tetromino && p.tetromino.name);
+            if (!pieceName) return;
+            pieceColor = colors[pieceName] || '#ffffff';
+        }
 
         ctx.save();
         ctx.globalCompositeOperation = 'screen';
         const glowTop = 640 * 0.35;
         const grad = ctx.createLinearGradient(0, 640, 0, glowTop);
-        grad.addColorStop(0, hexToRgba(pieceColor, 0.22 * beatPulse));
-        grad.addColorStop(0.55, hexToRgba(pieceColor, 0.08 * beatPulse));
+        grad.addColorStop(0, hexToRgba(pieceColor, 0.22 * intensity));
+        grad.addColorStop(0.55, hexToRgba(pieceColor, 0.08 * intensity));
         grad.addColorStop(1, hexToRgba(pieceColor, 0));
         ctx.fillStyle = grad;
         ctx.fillRect(0, glowTop, 340, 640 - glowTop);
@@ -4549,6 +4620,8 @@
         wasInDanger: false,
         puzzleIndex: 0,
         puzzleOrder: [],
+        lockPulse: 0,
+        lockPulseColor: '#ffffff',
         ctx: document.getElementById(`${prefix}-game`).getContext('2d'),
         bufferCtx: document.getElementById(`${prefix}-buffer`).getContext('2d'),
         holdCtx: document.getElementById(`${prefix}-hold`).getContext('2d'),
@@ -4745,6 +4818,15 @@
       }
     }
 
+    function performHardDrop(p) {
+      let sr = p.tetromino.row;
+      while(isValid(p.tetromino.matrix, p.tetromino.row+1, p.tetromino.col, p.playfield)) p.tetromino.row++;
+      if(p.tetromino.row > sr) p.hardDropTrails.push({col: p.tetromino.col, startRow: sr, endRow: p.tetromino.row, matrix: p.tetromino.matrix, color: colors[p.tetromino.name], life: 1.0});
+      spawnWaterSplash(p, p.tetromino.row);
+      sfx.hardDrop(p.isBot); p.shakeTime=4; p.shakeMag=2; p.bounceY=18; lockPiece(p);
+      keyFlashes.hardDrop = 1;
+    }
+
     function dropGarbage(p, linesToDrop) {
       if (linesToDrop <= 0) return;
       let lines = Math.min(linesToDrop, 20); 
@@ -4808,6 +4890,8 @@
     function lockPiece(p) {
       p.actionText = "";
       p.totalPieces++;
+      p.lockPulse = 1;
+      p.lockPulseColor = colors[p.tetromino.name] || '#ffffff';
       
       let spin = false;
       let mini = false;
@@ -6683,12 +6767,7 @@
           if (e.code === customBinds.rotateCw) { attemptRotate(p1, true); keyFlashes.cw = 1; }
           if (e.code === customBinds.rotateCcw) { attemptRotate(p1, false); keyFlashes.ccw = 1; }
           if (e.code === customBinds.hardDrop) {
-            let sr = p1.tetromino.row; 
-            while(isValid(p1.tetromino.matrix, p1.tetromino.row+1, p1.tetromino.col, p1.playfield)) p1.tetromino.row++;
-            if(p1.tetromino.row > sr) p1.hardDropTrails.push({col: p1.tetromino.col, startRow: sr, endRow: p1.tetromino.row, matrix: p1.tetromino.matrix, color: colors[p1.tetromino.name], life: 1.0});
-            spawnWaterSplash(p1, p1.tetromino.row);
-            sfx.hardDrop(false); p1.shakeTime=4; p1.shakeMag=2; p1.bounceY=18; lockPiece(p1);
-            keyFlashes.hardDrop = 1;
+            performHardDrop(p1);
           }
           if (e.code === customBinds.hold && gameMode !== 'puzzles') { executeHold(p1); keyFlashes.hold = 1; }
       }
@@ -6700,6 +6779,81 @@
       if (e.code === customBinds.left) { keys.left=false; if(keys.right) lastDir='right'; }
       if (e.code === customBinds.right) { keys.right=false; if(keys.left) lastDir='left'; }
       if (e.code === customBinds.down) keys.down = false;
+    });
+
+    // --- MOBILE TOUCH CONTROLS ---
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.body.classList.add('touch-device');
+    }
+
+    function getActivePlayerForTouch() {
+        if (isPaused || isStarting || overlayActive || players.length === 0 || players[0].gameOver) return null;
+        let p1 = players[0];
+        if (p1.isBot || !p1.tetromino) return null;
+        return p1;
+    }
+
+    function bindTouchButton(id, onDown, onUp) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const start = (e) => { e.preventDefault(); onDown(); };
+        const end = (e) => { e.preventDefault(); if (onUp) onUp(); };
+        el.addEventListener('touchstart', start, { passive: false });
+        el.addEventListener('touchend', end, { passive: false });
+        el.addEventListener('touchcancel', end, { passive: false });
+        el.addEventListener('mousedown', start);
+        el.addEventListener('mouseup', end);
+        el.addEventListener('mouseleave', end);
+    }
+
+    bindTouchButton('tc-left', () => {
+        const p1 = getActivePlayerForTouch();
+        if (!p1) return;
+        if (!keys.left) { move(p1, -1); dasTimer.left = 0; }
+        keys.left = true; lastDir = 'left'; keyFlashes.left = 1;
+    }, () => {
+        keys.left = false; if (keys.right) lastDir = 'right';
+    });
+
+    bindTouchButton('tc-right', () => {
+        const p1 = getActivePlayerForTouch();
+        if (!p1) return;
+        if (!keys.right) { move(p1, 1); dasTimer.right = 0; }
+        keys.right = true; lastDir = 'right'; keyFlashes.right = 1;
+    }, () => {
+        keys.right = false; if (keys.left) lastDir = 'left';
+    });
+
+    bindTouchButton('tc-down', () => {
+        const p1 = getActivePlayerForTouch();
+        if (!p1) return;
+        keys.down = true; keyFlashes.down = 1;
+    }, () => {
+        keys.down = false;
+    });
+
+    bindTouchButton('tc-cw', () => {
+        const p1 = getActivePlayerForTouch();
+        if (!p1) return;
+        attemptRotate(p1, true); keyFlashes.cw = 1;
+    });
+
+    bindTouchButton('tc-ccw', () => {
+        const p1 = getActivePlayerForTouch();
+        if (!p1) return;
+        attemptRotate(p1, false); keyFlashes.ccw = 1;
+    });
+
+    bindTouchButton('tc-hold', () => {
+        const p1 = getActivePlayerForTouch();
+        if (!p1 || gameMode === 'puzzles') return;
+        executeHold(p1); keyFlashes.hold = 1;
+    });
+
+    bindTouchButton('tc-drop', () => {
+        const p1 = getActivePlayerForTouch();
+        if (!p1) return;
+        performHardDrop(p1);
     });
 
     document.getElementById('p1-hold').addEventListener('click', () => { 
@@ -6805,8 +6959,10 @@
               gameArea.style.display = 'flex';
               gameArea.classList.remove('fly-in');
               void gameArea.offsetWidth; 
+              document.body.classList.add('in-game');
               
               document.getElementById('p2-area').style.display = (mode === 'vs' || mode === 'botvsbot' || mode === 'endurance') ? 'flex' : 'none';
+              resizeBg();
               
               ['p1', 'p2'].forEach(id => {
                   let el = document.getElementById(`${id}-area`);
@@ -7061,6 +7217,7 @@
       setTimeout(() => {
           document.getElementById('game-area').style.display = 'none'; 
           document.getElementById('game-area').classList.remove('fly-in');
+          document.body.classList.remove('in-game');
           
           let menu = document.getElementById('main-menu');
           menu.style.display = 'flex'; 
